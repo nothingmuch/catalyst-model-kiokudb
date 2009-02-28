@@ -6,6 +6,7 @@ use Scope::Guard;
 use Scalar::Util qw(weaken);
 use overload ();
 use Hash::Util::FieldHash::Compat qw(fieldhash);
+use Carp;
 
 sub format_table;
 
@@ -18,8 +19,9 @@ fieldhash my %scopes;
 if ($Catalyst::VERSION < 5.8 && !__PACKAGE__->isa('Moose::Object')) {
     unshift our @ISA, 'Moose::Object';
 
+    no warnings 'once';
     *BUILDARGS = sub {
-        my ($self, $app) = @_;
+        my $self = shift;
         my $arguments = ( ref( $_[-1] ) eq 'HASH' ) ? $_[-1] : {};
         return $self->merge_config_hashes($self->config, $arguments);
     }

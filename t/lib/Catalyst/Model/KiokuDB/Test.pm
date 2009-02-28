@@ -1,10 +1,14 @@
 package # hide from PAUSE
 Catalyst::Model::KiokuDB::Test;
 
-use Catalyst qw(-Debug);
+use Catalyst qw(
+    -Debug
+    Authentication
+);
 
 {
-    package FakeLogger;
+    package # hide from PAUSE
+    FakeLogger;
 
     sub clear { @{$_[0]} = () }
 
@@ -20,6 +24,23 @@ use Catalyst qw(-Debug);
 our $log = bless [], "FakeLogger";
 
 __PACKAGE__->log($log);
+
+__PACKAGE__->config(
+	'Plugin::Authentication' => {
+		realms => {
+			default => {
+				credential => {
+					class         => 'Password',
+					password_type => 'self_check'
+				},
+				store => {
+					class      => 'Model::KiokuDB',
+                    model_name => "kiokudb",
+				}
+			}
+		}
+	}
+);
 
 __PACKAGE__->setup();
 

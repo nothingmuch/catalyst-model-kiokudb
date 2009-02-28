@@ -16,7 +16,7 @@ $log->clear;
 {
     request('/insert');
 
-    like $log->str, qr/Loaded 1 object/, "loaded count";
+    like $log->str, qr/Loaded 2 objects/, "loaded count";
     unlike $log->str, qr/leaked/, "no leaks";
 
     $log->clear;
@@ -49,7 +49,14 @@ $log->clear;
     $log->clear;
 }
 
+{
+    request('/login');
 
+    like $log->str, qr/Loaded 1 object/, "loaded count";
+    unlike $log->str, qr/leaked/, "no leaks";
 
-is( $Catalyst::Model::KiokuDB::Test::Controller::Root::ran, 4, "tests ran successfully" );
+    $log->clear;
+}
+
+is( $Catalyst::Model::KiokuDB::Test::Controller::Root::ran, 5, "tests ran successfully" );
 

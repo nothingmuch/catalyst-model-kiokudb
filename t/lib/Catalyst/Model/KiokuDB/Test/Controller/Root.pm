@@ -2,6 +2,9 @@ package # hide from CPAN
 Catalyst::Model::KiokuDB::Test::Controller::Root;
 use Moose;
 
+use Catalyst::Model::KiokuDB::Test::User;
+use Authen::Passphrase::Clear;
+
 use Test::More;
 
 use namespace::clean -except => 'meta';
@@ -24,6 +27,13 @@ sub insert : Local {
     {
         my $foo = { bar => "lala" };
         $m->store( foo => $foo );
+
+        my $user = Catalyst::Model::KiokuDB::Test::User->new(
+            id => "henry",
+            password => Authen::Passphrase::Clear->new("foobar"),
+        );
+
+        $m->insert($user);
     }
 
     isa_ok( $m->directory, "KiokuDB" );
@@ -34,11 +44,7 @@ sub insert : Local {
 sub fetch : Local {
     my ( $self, $c ) = @_;
 
-    ok( my $m = $c->model("KiokuDB"), "got a model" );
-
-    isa_ok( $m, "Catalyst::Model::KiokuDB" );    
-
-    can_ok( $m, "directory" );
+    my $m = $c->model("KiokuDB");
 
     {
         my $foo = $m->lookup('foo');
@@ -53,11 +59,7 @@ sub fetch : Local {
 sub leak : Local {
     my ( $self, $c ) = @_;
 
-    ok( my $m = $c->model("KiokuDB"), "got a model" );
-
-    isa_ok( $m, "Catalyst::Model::KiokuDB" );    
-
-    can_ok( $m, "directory" );
+    my $m = $c->model("KiokuDB");
 
     {
         my $foo = $m->lookup('foo');
@@ -73,11 +75,7 @@ sub leak : Local {
 sub fresh : Local {
     my ( $self, $c ) = @_;
 
-    ok( my $m = $c->model("KiokuDB"), "got a model" );
-
-    isa_ok( $m, "Catalyst::Model::KiokuDB" );    
-
-    can_ok( $m, "directory" );
+    my $m = $c->model("KiokuDB");
 
     {
         my $foo = $m->lookup('foo');
@@ -85,6 +83,20 @@ sub fresh : Local {
     }
 
     isa_ok( $m->directory, "KiokuDB" );
+
+    $ran++;
+}
+
+sub login : Local {
+    my ( $self, $c ) = @_;
+
+    ok( !$c->user_exists, "no user" );
+
+    $c->authenticate({ id => "henry", password => "foobar" });
+
+    ok( $c->user_exists, 'user exists now' );
+
+    isa_ok( $c->user->get_object, "Catalyst::Model::KiokuDB::Test::User" );
 
     $ran++;
 }
