@@ -75,3 +75,35 @@ __PACKAGE__->meta->make_immutable;
 __PACKAGE__
 
 __END__
+
+=head1 NAME
+
+=head1 SYNOPSIS
+
+    __PACKAGE__->config(
+        'Plugin::Authentication' => {
+            realms => {
+                default => {
+                    credential => {
+                        # see L<KiokuX::User>
+                        class         => 'Password',
+                        password_type => 'self_check'
+                    },
+                    store => {
+                        class      => 'Model::KiokuDB',
+                        model_name => "kiokudb", # whatever your model is actually named
+                    }
+                }
+            }
+        }
+    );
+
+=head1 DESCRIPTION
+
+This module provides the glue to use L<KiokuX::User> objects for authentication
+inside L<Catalyst> apps that use L<Catalyst::Model::KiokuDB>.
+
+The user object is wrapped with
+L<Catalyst::Authentication::Store::Model::KiokuDB::UserWrapper>.
+
+=cut

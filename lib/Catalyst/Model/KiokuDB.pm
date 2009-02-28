@@ -151,3 +151,61 @@ __PACKAGE__->meta->make_immutable;
 __PACKAGE__
 
 __END__
+
+=head1 NAME
+
+Catalyst::Model::KiokuDB - use L<KiokuDB> in your L<Catalyst> apps
+
+=head1 SYNOPSIS
+
+    package MyApp::Model::KiokuDB;
+    use Moose;
+
+    BEGIN { extends qw(Catalyst::Model::KiokuDB) }
+
+    # this is probably best put in the catalyst config file instead:
+    __PACKAGE__->config( dsn => "bdb:dir=root/db" );
+
+
+
+    $c->model("kiokudb")->lookup($id);
+
+=head1 DESCRIPTION
+
+=head1 ATTRIBUTES
+
+=over 4
+
+=item manage_scope
+
+If true (the default), C<new_scope> will be called once per request
+automatically.
+
+=item clear_leaks
+
+If true (the default) and C<manage_scope> is also enabled, the live object set
+will be cleared at the end of every request.
+
+This also reports any leaked objects.
+
+Note that in order to work the stash is cleared. Since this is run after C<$c>
+is already destroyed this should not be an issue, but if it causes problems for
+you you can disable it.
+
+Under C<-Debug> mode statistics on loaded objects will be printed as well.
+
+=item model_class
+
+Defaults to L<KiokuX::Model>.
+
+See L<KiokuX::Model> for more details. This is the proper place to provide
+convenience methods for your model that are reusable outside of your
+L<Catalyst> app (e.g. in scripts or model unit tests).
+
+=back
+
+=head1 SEE ALSO
+
+L<KiokuDB>, L<KiokuX::Model>, L<Catalyst::Authentication::Store::Model::KiokuDB>
+
+=cut

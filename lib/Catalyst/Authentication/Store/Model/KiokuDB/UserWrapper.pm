@@ -67,3 +67,24 @@ __PACKAGE__->meta->make_immutable;
 __PACKAGE__
 
 __END__
+
+=pod
+
+=head1 NAME
+
+Catalyst::Authentication::Store::Model::KiokuDB::UserWrapper - L<KiokuX::User>
+wrapper for L<Catalyst::Plugin::Authentication>.
+
+=head1 METHODS
+
+=over 4
+
+=item for_session
+
+=item get_object
+
+Returns the model level object.
+
+=back
+
+=cut
