@@ -30,10 +30,16 @@ if ($Catalyst::VERSION < 5.8 && !__PACKAGE__->isa('Moose::Object')) {
 sub ACCEPT_CONTEXT {
     my ($self, $c, @args) = @_;
 
-    $self->save_scope($c);
+    $self->save_scope($c) if $self->manage_scope;
 
     return $self;
 }
+
+has manage_scope => (
+    isa => "Bool",
+    is  => "ro",
+    default => 1,
+);
 
 has clear_leaks => (
     isa => "Bool",
