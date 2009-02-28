@@ -12,6 +12,8 @@ sub format_table;
 
 use namespace::clean -except => 'meta';
 
+our $VERSION = "0.01";
+
 extends qw(Catalyst::Model);
 
 fieldhash my %scopes;
@@ -207,5 +209,20 @@ L<Catalyst> app (e.g. in scripts or model unit tests).
 =head1 SEE ALSO
 
 L<KiokuDB>, L<KiokuX::Model>, L<Catalyst::Authentication::Store::Model::KiokuDB>
+
+=head1 VERSION CONTROL
+
+KiokuDB is maintained using Git. Information about the repository is available
+on L<http://www.iinteractive.com/kiokudb/>
+
+=head1 AUTHOR
+
+Yuval Kogman E<lt>nothingmuch@woobling.orgE<gt>
+
+=head1 COPYRIGHT
+
+    Copyright (c) 2009 Yuval Kogman, Infinity Interactive. All
+    rights reserved This program is free software; you can redistribute
+    it and/or modify it under the same terms as Perl itself.
 
 =cut
