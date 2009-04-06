@@ -55,19 +55,26 @@ sub from_session {
 sub find_user {
     my ( $self, $userinfo, $c ) = @_;
 
-    my $id = $userinfo->{id} || croak "No user ID specified";
-
     my $model = $self->get_model($c);
 
     my $user = $model->can("find_user")
         ? $model->find_user($userinfo)
-        : $model->lookup("user:$id"); # KiokuX::User convention... FIXME also support ->search?
+        : $self->find_user_by_id($userinfo, $model);
 
     if ( $user ) {
         return $self->wrap($c, $user);
     } else {
         return;
     }
+}
+
+sub find_user_by_id {
+    my ( $self, $userinfo, $model ) = @_;
+
+    my $id = $userinfo->{id} || croak "No user ID specified";
+
+    # KiokuX::User convention... FIXME also support ->search?
+    $model->lookup("user:$id");
 }
 
 __PACKAGE__->meta->make_immutable;
