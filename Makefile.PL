@@ -12,7 +12,7 @@ WriteMakefile(
     PL_FILES     => { },
     PREREQ_PM    => {
         'KiokuX::Model' => 0,
-        'Catalyst' => 5.7,
+        'Catalyst' => 5.8,
         'Moose' => 0,
         'Scope::Guard' => 0,
         'Hash::Util::FieldHash::Compat' => 0,
