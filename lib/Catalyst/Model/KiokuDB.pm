@@ -54,7 +54,12 @@ has model_class => (
 sub BUILD {
     my ( $self, $params ) = @_;
 
-    $self->_model( $self->_new_model(%$params) );
+    # Don't pass Catalyst specific parameters into the model, as this will
+    # break things using MX::StrictConstructor
+    my %params = %$params;
+    delete $params{$_} for (grep { /^_?catalyst/ } keys %params);
+
+    $self->_model( $self->_new_model(%params) );
 }
 
 sub _new_model {
