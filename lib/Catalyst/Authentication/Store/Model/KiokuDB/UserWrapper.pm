@@ -20,7 +20,7 @@ has 'user_object' => (
 
 sub roles { @{ shift->get_object->roles } };
 
-has 'auth_realm' => (
+has [qw(auth_realm store)] => (
     is => 'rw',
 );
 

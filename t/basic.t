@@ -14,49 +14,65 @@ my $log = Catalyst::Model::KiokuDB::Test->log;
 $log->clear;
 
 {
+    local $Catalyst::Model::KiokuDB::Test::Controller::Root::ran = 0;
+
     request('/insert');
 
     like $log->str, qr/Loaded 2 objects/, "loaded count";
     unlike $log->str, qr/leaked/, "no leaks";
 
     $log->clear;
+
+    is( $Catalyst::Model::KiokuDB::Test::Controller::Root::ran, 1, "tests ran successfully" );
 }
 
 {
+    local $Catalyst::Model::KiokuDB::Test::Controller::Root::ran = 0;
     request('/fetch');
 
     like $log->str, qr/Loaded 1 object/, "loaded count";
     unlike $log->str, qr/leaked/, "no leaks";
 
     $log->clear;
+
+    is( $Catalyst::Model::KiokuDB::Test::Controller::Root::ran, 1, "tests ran successfully" );
 }
 
 {
+    local $Catalyst::Model::KiokuDB::Test::Controller::Root::ran = 0;
     request('/leak');
 
     like $log->str, qr/Loaded 1 object/, "loaded count";
     like $log->str, qr/leaked/, "no leaks";
 
     $log->clear;
+
+    is( $Catalyst::Model::KiokuDB::Test::Controller::Root::ran, 1, "tests ran successfully" );
 }
 
 {
+    local $Catalyst::Model::KiokuDB::Test::Controller::Root::ran = 0;
+
     request('/fresh');
 
     like $log->str, qr/Loaded 1 object/, "loaded count";
     unlike $log->str, qr/leaked/, "no leaks";
 
     $log->clear;
+
+    is( $Catalyst::Model::KiokuDB::Test::Controller::Root::ran, 1, "tests ran successfully" );
 }
 
 {
+    local $Catalyst::Model::KiokuDB::Test::Controller::Root::ran = 0;
+
     request('/login');
 
     like $log->str, qr/Loaded 1 object/, "loaded count";
     unlike $log->str, qr/leaked/, "no leaks";
 
     $log->clear;
-}
 
-is( $Catalyst::Model::KiokuDB::Test::Controller::Root::ran, 5, "tests ran successfully" );
+    is( $Catalyst::Model::KiokuDB::Test::Controller::Root::ran, 1, "tests ran successfully" );
+}
 
