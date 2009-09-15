@@ -12,7 +12,7 @@ sub format_table;
 
 use namespace::clean -except => 'meta';
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 
 extends qw(Catalyst::Model);
 
