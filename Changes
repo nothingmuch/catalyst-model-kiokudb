@@ -1,3 +1,9 @@
+0.03 28 Sep 2009
+  - Support ->authenticate({ username => ... }) in addition to
+    ->authenticate({ id => ... }), because the former is used in almost all
+    docs available and should therefore Just Work.
+
+0.02
   - Require Catalyst 5.8 and so remove nasty back compatibility hack (t0m)
   - When find_user is implemented by the model the 'id' field is no longer
     mandatory. (Jason Kohles)
