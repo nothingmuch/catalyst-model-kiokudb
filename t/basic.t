@@ -76,3 +76,16 @@ $log->clear;
     is( $Catalyst::Model::KiokuDB::Test::Controller::Root::ran, 1, "tests ran successfully" );
 }
 
+
+{
+    local $Catalyst::Model::KiokuDB::Test::Controller::Root::ran = 0;
+
+    request('/login_username');
+
+    like $log->str, qr/Loaded 1 object/, "loaded count";
+    unlike $log->str, qr/leaked/, "no leaks";
+
+    $log->clear;
+
+    is( $Catalyst::Model::KiokuDB::Test::Controller::Root::ran, 1, "tests ran successfully" );
+}

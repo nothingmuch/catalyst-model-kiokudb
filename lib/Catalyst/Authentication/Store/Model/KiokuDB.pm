@@ -71,7 +71,13 @@ sub find_user {
 sub find_user_by_id {
     my ( $self, $userinfo, $model ) = @_;
 
-    my $id = $userinfo->{id} || croak "No user ID specified";
+    my $id = $userinfo->{id};
+
+    $id = $userinfo->{username}
+        unless defined $id;
+
+    croak "No user ID specified"
+        unless defined $id;
 
     # KiokuX::User convention... FIXME also support ->search?
     $model->lookup("user:$id");

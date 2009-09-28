@@ -101,6 +101,20 @@ sub login : Local {
     $ran++;
 }
 
+
+sub login_username : Local {
+    my ( $self, $c ) = @_;
+
+    ok( !$c->user_exists, "no user" );
+
+    $c->authenticate({ username => "henry", password => "foobar" });
+
+    ok( $c->user_exists, 'user exists now' );
+
+    isa_ok( $c->user->get_object, "Catalyst::Model::KiokuDB::Test::User" );
+
+    $ran++;
+}
 __PACKAGE__
 
 __END__
