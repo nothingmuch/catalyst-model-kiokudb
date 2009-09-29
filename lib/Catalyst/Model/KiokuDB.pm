@@ -23,7 +23,7 @@ sub ACCEPT_CONTEXT {
 
     $self->save_scope($c) if $self->manage_scope;
 
-    return $self;
+    return $self->model;
 }
 
 has manage_scope => (

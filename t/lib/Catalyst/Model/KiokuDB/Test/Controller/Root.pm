@@ -20,7 +20,7 @@ sub insert : Local {
 
     ok( my $m = $c->model("KiokuDB"), "got a model" );
 
-    isa_ok( $m, "Catalyst::Model::KiokuDB" );    
+    isa_ok( $m, "KiokuX::Model" );
 
     can_ok( $m, "directory" );
 
