@@ -6,7 +6,7 @@ use namespace::clean -except => 'meta';
 
 BEGIN { extends qw(Catalyst::Model::KiokuDB) }
 
-__PACKAGE__->config->{dsn} = "hash";
+__PACKAGE__->config( dsn => "hash" );
 
 __PACKAGE__
 
