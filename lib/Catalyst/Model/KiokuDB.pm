@@ -41,6 +41,7 @@ has clear_leaks => (
 has model => (
     isa => "KiokuX::Model",
     is  => "ro",
+    predicate => "has_model",
     writer => "_model",
     handles => "KiokuDB::Role::API",
 );
@@ -54,12 +55,17 @@ has model_class => (
 sub BUILD {
     my ( $self, $params ) = @_;
 
-    # Don't pass Catalyst specific parameters into the model, as this will
-    # break things using MX::StrictConstructor
-    my %params = %$params;
-    delete $params{$_} for (grep { /^_?catalyst/ } keys %params);
+    unless ( $self->has_model ) {
+        # Don't pass Catalyst specific parameters into the model, as this will
+        # break things using MX::StrictConstructor
+        my %params = %$params;
+        delete $params{$_} for (grep { /^_?catalyst/ } keys %params);
 
-    $self->_model( $self->_new_model(%params) );
+        # don't pass parameters to our constructor
+        delete @params{grep { defined } map { $_->init_arg } $self->meta->get_all_attributes};
+
+        $self->_model( $self->_new_model(%params) );
+    }
 }
 
 sub _new_model {
