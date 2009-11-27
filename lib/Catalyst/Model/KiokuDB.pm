@@ -52,6 +52,17 @@ has model_class => (
     default => "KiokuX::Model",
 );
 
+has model_args => (
+    isa     => "HashRef",
+    is      => "ro",
+    default => sub { +{} },
+);
+
+has dsn => (
+    is => "ro",
+    predicate => "has_dsn",
+);
+
 sub BUILD {
     my ( $self, $params ) = @_;
 
@@ -64,7 +75,17 @@ sub BUILD {
         # don't pass parameters to our constructor
         delete @params{grep { defined } map { $_->init_arg } $self->meta->get_all_attributes};
 
-        $self->_model( $self->_new_model(%params) );
+        if ( scalar keys %params ) {
+            carp("Passing extra parameters to the constructor is deprecated, please use model_args");
+        }
+
+        $self->_model(
+            $self->_new_model(
+                $self->has_dsn ? ( dsn => $self->dsn ) : (),
+                %params,
+                %{ $self->model_args }
+            ),
+        );
     }
 }
 
