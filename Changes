@@ -1,3 +1,7 @@
+0.11
+  - Passing random args to the config is now deprecated, use 'model_args' and
+    give it a hash (dsn is still supported)
+
 0.10 29 Sep 2009
   - WARNING: This release is backward-incompatible with previous ones, if you
     define methods directly in your catalyst model class and expect to be able
