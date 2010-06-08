@@ -11,6 +11,7 @@ WriteMakefile(
     SIGN         => 1,
     PL_FILES     => { },
     PREREQ_PM    => {
+        'KiokuDB' => '0.46',
         'KiokuX::Model' => 0,
         'Catalyst' => 5.8,
         'Moose' => 0,

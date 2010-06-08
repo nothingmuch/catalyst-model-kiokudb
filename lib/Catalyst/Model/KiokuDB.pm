@@ -38,6 +38,24 @@ has clear_leaks => (
     default => 1,
 );
 
+has report_leaks => (
+    isa => "Bool",
+    is  => "ro",
+    default => 1,
+);
+
+has report_loads => (
+    isa => "Bool",
+    is  => "ro",
+    default => 1,
+);
+
+sub scope_guard_needed {
+    my $self = shift;
+
+    $self->clear_leaks || $self->report_leaks || $self->report_loads;
+}
+
 has model => (
     isa => "KiokuX::Model",
     is  => "ro",
@@ -79,13 +97,17 @@ sub BUILD {
             carp("Passing extra parameters to the constructor is deprecated, please use model_args");
         }
 
-        $self->_model(
-            $self->_new_model(
-                $self->has_dsn ? ( dsn => $self->dsn ) : (),
-                %params,
-                %{ $self->model_args }
-            ),
+        my $model = $self->_new_model(
+            $self->has_dsn ? ( dsn => $self->dsn ) : (),
+            %params,
+            %{ $self->model_args },
         );
+
+        my $l = $model->directory->live_objects;
+
+        $l->clear_leaks($self->clear_leaks);
+
+        $self->_model($model);
     }
 }
 
@@ -104,11 +126,7 @@ sub save_scope {
     $scopes{$c}{overload::StrVal($dir)} ||= do {
         my $scope = $dir->new_scope;
 
-        if ( $self->clear_leaks ) {
-            $self->setup_leak_helper($c, $scope);
-        } else {
-            $scope;
-        }
+        $self->scope_guard_needed ? $self->setup_scope_guard($c, $scope) : $scope;
     };
 }
 
@@ -128,17 +146,18 @@ sub format_table {
     return $t->draw;
 }
 
-sub setup_leak_helper {
+sub setup_scope_guard {
     my ( $self, $c, $scope ) = @_;
 
-    # gotta capture this early
+    # gotta capture this early to avoid leaking $c
     my $log = $c->log;
     my $debug = $c->debug;
     my $stash = $c->stash;
 
     return Scope::Guard->new(sub {
         # we need to be sure all real references to the objects are cleared
-        # if the stash clearing is problematic clear_leaks should be disabled
+        # if the stash clearing is problematic clear_leaks, report_leaks and
+        # report_loads should be disabled
         %$stash = ();
 
         my $l = $scope->live_objects;
@@ -153,19 +172,29 @@ sub setup_leak_helper {
             @live_objects = ();
         }
 
-        undef $scope;
-
-        {
-            # anything still live at this point is a leak
-            if ( my @leaked_objects = $l->live_objects ) {
+        my ( $prev_tracker, $prev_clear );
+        if ( $self->report_leaks ) {
+            $prev_tracker = $l->leak_tracker;
+            $l->leak_tracker(sub {
+                my @leaked_objects = @_;
                 $log->warn("leaked objects:\n" . format_table(@leaked_objects));
+            });
+        }
+
+        $prev_clear = $l->clear_leaks;
+        $l->clear_leaks($self->clear_leaks);
+
+        $scope->remove;
+
+        if ( $self->report_leaks ) {
+            if ( $prev_tracker ) {
+                $l->leak_tracker($prev_tracker);
+            } else {
+                $l->clear_leak_tracker;
             }
         }
 
-        # finally, we clear the live object set to ensure there are no problems
-        # WRT immortal objects (it doesn't solve leaks but it at least keeps
-        # the behavior consistent for subsequent lookups)
-        $l->clear();
+        $l->clear_leaks($prev_clear);
     });
 }
 
